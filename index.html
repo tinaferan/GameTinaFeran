@@ -1,110 +1,166 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Simple Tetris Game</title>
+  <title>Ultra Extreme Tetris Game</title>
   <style>
     .grid {
       width: 200px;
       height: 400px;
       display: flex;
       flex-wrap: wrap;
-      background-color: #ddd;
-      border: 2px solid #333;
+      background-color: #000;
+      border: 4px solid #ff00ff;
       margin: 20px auto;
+      box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff, 0 0 90px #ff073a;
+      animation: gridPulse 1s infinite alternate;
     }
     .grid div {
       width: 20px;
       height: 20px;
     }
     .tetromino0 {
-      background-color: #FF5733; /* Red-Orange */
-      border: 1px solid white;
+      background-color: #FF073A; /* Neon Red */
+      border: 2px solid #ffffff;
       box-sizing: border-box;
+      box-shadow: 0 0 15px #FF073A, 0 0 25px #FF073A;
+      animation: extremePulse 0.3s infinite alternate;
     }
     .tetromino1 {
-      background-color: #33FF57; /* Green */
-      border: 1px solid white;
+      background-color: #00FF41; /* Neon Green */
+      border: 2px solid #ffffff;
       box-sizing: border-box;
+      box-shadow: 0 0 15px #00FF41, 0 0 25px #00FF41;
+      animation: extremePulse 0.3s infinite alternate;
     }
     .tetromino2 {
-      background-color: #3357FF; /* Blue */
-      border: 1px solid white;
+      background-color: #00D4FF; /* Neon Cyan */
+      border: 2px solid #ffffff;
       box-sizing: border-box;
+      box-shadow: 0 0 15px #00D4FF, 0 0 25px #00D4FF;
+      animation: extremePulse 0.3s infinite alternate;
     }
     .tetromino3 {
-      background-color: #FF33A1; /* Pink */
-      border: 1px solid white;
+      background-color: #FF00FF; /* Neon Magenta */
+      border: 2px solid #ffffff;
       box-sizing: border-box;
+      box-shadow: 0 0 15px #FF00FF, 0 0 25px #FF00FF;
+      animation: extremePulse 0.3s infinite alternate;
     }
     .tetromino4 {
-      background-color: #FFD133; /* Yellow */
-      border: 1px solid white;
+      background-color: #FFFF00; /* Neon Yellow */
+      border: 2px solid #ffffff;
       box-sizing: border-box;
+      box-shadow: 0 0 15px #FFFF00, 0 0 25px #FFFF00;
+      animation: extremePulse 0.3s infinite alternate;
     }
     .taken {
-      background-color: #888;
+      background-color: #111;
     }
     .stacked0 {
-      background-color: #C70039; /* Darker Red-Orange */
-      border: 1px solid white;
+      background-color: #CC052F; /* Darker Neon Red */
+      border: 2px solid #ffffff;
       box-sizing: border-box;
+      box-shadow: 0 0 20px #CC052F, 0 0 30px #CC052F;
     }
     .stacked1 {
-      background-color: #00C957; /* Darker Green */
-      border: 1px solid white;
+      background-color: #00CC33; /* Darker Neon Green */
+      border: 2px solid #ffffff;
       box-sizing: border-box;
+      box-shadow: 0 0 20px #00CC33, 0 0 30px #00CC33;
     }
     .stacked2 {
-      background-color: #0033C9; /* Darker Blue */
-      border: 1px solid white;
+      background-color: #00A3CC; /* Darker Neon Cyan */
+      border: 2px solid #ffffff;
       box-sizing: border-box;
+      box-shadow: 0 0 20px #00A3CC, 0 0 30px #00A3CC;
     }
     .stacked3 {
-      background-color: #C9006F; /* Darker Pink */
-      border: 1px solid white;
+      background-color: #CC00CC; /* Darker Neon Magenta */
+      border: 2px solid #ffffff;
       box-sizing: border-box;
+      box-shadow: 0 0 20px #CC00CC, 0 0 30px #CC00CC;
     }
     .stacked4 {
-      background-color: #C9A100; /* Darker Yellow */
-      border: 1px solid white;
+      background-color: #CCCC00; /* Darker Neon Yellow */
+      border: 2px solid #ffffff;
       box-sizing: border-box;
+      box-shadow: 0 0 20px #CCCC00, 0 0 30px #CCCC00;
     }
     #score {
       text-align: center;
-      font-family: Arial, sans-serif;
-      font-size: 24px;
+      font-family: 'Impact', sans-serif;
+      font-size: 32px;
+      color: #00ffff;
+      text-shadow: 0 0 15px #00ffff, 0 0 30px #ff00ff, 0 0 45px #ffff00;
+      animation: scoreGlow 0.8s infinite alternate;
     }
     #game-over {
       text-align: center;
-      font-family: Arial, sans-serif;
-      font-size: 30px;
-      color: red;
-      display: none;
-    }
-    #celebration {
-      text-align: center;
-      font-family: Arial, sans-serif;
-      font-size: 20px;
-      color: gold;
+      font-family: 'Impact', sans-serif;
+      font-size: 40px;
+      color: #ff073a;
+      text-shadow: 0 0 15px #ff073a, 0 0 30px #ff073a, 0 0 45px #ff073a;
       display: none;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      animation: celebrate 1s ease-out;
+      animation: shake 0.5s infinite;
     }
-    @keyframes celebrate {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-      50% { opacity: 1; transform: translate(-50%, -50%) scale-upon(1.2); }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    #celebration {
+      text-align: center;
+      font-family: 'Impact', sans-serif;
+      font-size: 28px;
+      color: #ffff00;
+      text-shadow: 0 0 15px #ffff00, 0 0 30px #ff00ff, 0 0 45px #00ffff;
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: ultraCelebrate 0.6s ease-out;
+    }
+    @keyframes extremePulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.2); }
+    }
+    @keyframes gridPulse {
+      0% { box-shadow: 0 0 30px #ff00ff, 0 0 60px #00ffff, 0 0 90px #ff073a; }
+      100% { box-shadow: 0 0 40px #ff00ff, 0 0 80px #00ffff, 0 0 120px #ff073a; }
+    }
+    @keyframes scoreGlow {
+      0% { text-shadow: 0 0 15px #00ffff, 0 0 30px #ff00ff, 0 0 45px #ffff00; }
+      100% { text-shadow: 0 0 25px #00ffff, 0 0 50px #ff00ff, 0 0 70px #ffff00; }
+    }
+    @keyframes ultraCelebrate {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(-20deg); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.8) rotate(20deg); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1) rotate(-20deg); }
+    }
+    @keyframes shake {
+      0% { transform: translate(-50%, -50%) translateX(0); }
+      25% { transform: translate(-50%, -50%) translateX(-10px) rotate(5deg); }
+      50% { transform: translate(-50%, -50%) translateX(10px) rotate(-5deg); }
+      75% { transform: translate(-50%, -50%) translateX(-5px) rotate(5deg); }
+      100% { transform: translate(-50%, -50%) translateX(0); }
+    }
+    body {
+      background-color: #000;
+      background-image: linear-gradient(45deg, #111, #000, #111);
+      animation: bgFlash 2s infinite;
+    }
+    @keyframes bgFlash {
+      0% { background-color: #000; }
+      50% { background-color: #222; }
+      100% { background-color: #000; }
     }
   </style>
 </head>
 <body>
   <div id="score">Score: 0</div>
   <div class="grid" id="grid"></div>
-  <div id="game-over">Game Over!</div>
-  <div id="celebration">Nice Landing!</div>
+  <div id="game-over">ULTRA GAME OVER!</div>
+  <div id="celebration">ULTRA EXTREME LANDING!</div>
 
   <script>
     const grid = document.getElementById('grid');
@@ -119,6 +175,7 @@
     let score = 0;
     let gameOver = false;
     let currentTetrominoIndex = 0;
+    let speed = 500; // Ultra fast initial speed
 
     // Create the grid
     for (let i = 0; i < width * height; i++) {
@@ -199,7 +256,7 @@
       celebrationDisplay.style.display = 'block';
       setTimeout(() => {
         celebrationDisplay.style.display = 'none';
-      }, 1000);
+      }, 600);
     }
 
     // Stop and stack
@@ -218,6 +275,9 @@
         draw();
         addScore();
         checkGameOver();
+        speed = Math.max(100, speed - 30); // Ultra speed increase, minimum 100ms
+        clearInterval(gameLoop);
+        gameLoop = setInterval(moveDown, speed);
       }
     }
 
@@ -268,7 +328,7 @@
       for (let i = 0; i < 199; i += width) {
         const row = [i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7, i + 8, i + 9];
         if (row.every(index => squares[index].classList.contains('taken'))) {
-          score += 10;
+          score += 50; // Extreme points for row clear
           scoreDisplay.innerHTML = `Score: ${score}`;
           row.forEach(index => {
             squares[index].classList.remove('taken');
@@ -280,6 +340,9 @@
           const squaresRemoved = squares.splice(i, width);
           squares = squaresRemoved.concat(squares);
           squares.forEach(cell => grid.appendChild(cell));
+          // Randomly shake grid on row clear
+          grid.style.animation = 'shake 0.5s';
+          setTimeout(() => grid.style.animation = 'gridPulse 1s infinite alternate', 500);
         }
       }
     }
@@ -289,12 +352,13 @@
       if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
         gameOver = true;
         gameOverDisplay.style.display = 'block';
+        clearInterval(gameLoop);
       }
     }
 
     // Start the game
     draw();
-    setInterval(moveDown, 1000);
+    let gameLoop = setInterval(moveDown, speed);
   </script>
 </body>
 </html>
