@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Tetris Game</title>
+  <style>
+    .grid {
+      width: 200px;
+      height: 400px;
+      display: flex;
+      flex-wrap: wrap;
+      background-color: #ddd;
+      border: 2px solid #333;
+      margin: 20px auto;
+    }
+    .grid div {
+      width: 20px;
+      height: 20px;
+    }
+    .tetromino0 {
+      background-color: #FF5733; /* Red-Orange */
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+    .tetromino1 {
+      background-color: #33FF57; /* Green */
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+    .tetromino2 {
+      background-color: #3357FF; /* Blue */
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+    .tetromino3 {
+      background-color: #FF33A1; /* Pink */
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+    .tetromino4 {
+      background-color: #FFD133; /* Yellow */
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+    .taken {
+      background-color: #888;
+    }
+    .stacked0 {
+      background-color: #C70039; /* Darker Red-Orange */
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+    .stacked1 {
+      background-color: #00C957; /* Darker Green */
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+    .stacked2 {
+      background-color: #0033C9; /* Darker Blue */
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+    .stacked3 {
+      background-color: #C9006F; /* Darker Pink */
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+    .stacked4 {
+      background-color: #C9A100; /* Darker Yellow */
+      border: 1px solid white;
+      box-sizing: border-box;
+    }
+    #score {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+    }
+    #game-over {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 30px;
+      color: red;
+      display: none;
+    }
+    #celebration {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 20px;
+      color: gold;
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: celebrate 1s ease-out;
+    }
+    @keyframes celebrate {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      50% { opacity: 1; transform: translate(-50%, -50%) scale-upon(1.2); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div id="score">Score: 0</div>
+  <div class="grid" id="grid"></div>
+  <div id="game-over">Game Over!</div>
+  <div id="celebration">Nice Landing!</div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const scoreDisplay = document.getElementById('score');
+    const gameOverDisplay = document.getElementById('game-over');
+    const celebrationDisplay = document.getElementById('celebration');
+    const width = 10;
+    const height = 20;
+    let squares = [];
+    let currentPosition = 4;
+    let currentRotation = 0;
+    let score = 0;
+    let gameOver = false;
+    let currentTetrominoIndex = 0;
+
+    // Create the grid
+    for (let i = 0; i < width * height; i++) {
+      const square = document.createElement('div');
+      grid.appendChild(square);
+      squares.push(square);
+    }
+    for (let i = 0; i < width; i++) {
+      const square = document.createElement('div');
+      square.classList.add('taken');
+      grid.appendChild(square);
+      squares.push(square);
+    }
+
+    // Tetrominoes
+    const lTetromino = [
+      [1, width + 1, width * 2 + 1, 2],
+      [width, width + 1, width + 2, width * 2],
+      [1, width + 1, width * 2 + 1, width * 2],
+      [width, width * 2, width * 2 + 1, width * 2 + 2]
+    ];
+    const zTetromino = [
+      [0, width, width + 1, width * 2 + 1],
+      [width + 1, width + 2, width * 2, width * 2 + 1],
+      [0, width, width + 1, width * 2 + 1],
+      [width + 1, width + 2, width * 2, width * 2 + 1]
+    ];
+    const tTetromino = [
+      [1, width, width + 1, width + 2],
+      [1, width + 1, width + 2, width * 2 + 1],
+      [width, width + 1, width + 2, width * 2 + 1],
+      [1, width, width + 1, width * 2 + 1]
+    ];
+    const oTetromino = [
+      [0, 1, width, width + 1],
+      [0, 1, width, width + 1],
+      [0, 1, width, width + 1],
+      [0, 1, width, width + 1]
+    ];
+    const iTetromino = [
+      [1, width + 1, width * 2 + 1, width * 3 + 1],
+      [width, width + 1, width + 2, width + 3],
+      [1, width + 1, width * 2 + 1, width * 3 + 1],
+      [width, width + 1, width + 2, width + 3]
+    ];
+
+    const tetrominoes = [lTetromino, zTetromino, tTetromino, oTetromino, iTetromino];
+    let random = Math.floor(Math.random() * tetrominoes.length);
+    currentTetrominoIndex = random;
+    let current = tetrominoes[random][currentRotation];
+
+    // Draw the tetromino
+    function draw() {
+      if (gameOver) return;
+      current.forEach(index => {
+        squares[currentPosition + index].classList.add('tetromino' + currentTetrominoIndex);
+      });
+    }
+
+    // Undraw the tetromino
+    function undraw() {
+      current.forEach(index => {
+        squares[currentPosition + index].classList.remove('tetromino' + currentTetrominoIndex);
+      });
+    }
+
+    // Move down
+    function moveDown() {
+      if (gameOver) return;
+      undraw();
+      currentPosition += width;
+      draw();
+      stop();
+    }
+
+    // Show celebration
+    function showCelebration() {
+      celebrationDisplay.style.display = 'block';
+      setTimeout(() => {
+        celebrationDisplay.style.display = 'none';
+      }, 1000);
+    }
+
+    // Stop and stack
+    function stop() {
+      if (current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
+        current.forEach(index => {
+          squares[currentPosition + index].classList.add('taken');
+          squares[currentPosition + index].classList.add('stacked' + currentTetrominoIndex);
+          squares[currentPosition + index].classList.remove('tetromino' + currentTetrominoIndex);
+        });
+        showCelebration();
+        random = Math.floor(Math.random() * tetrominoes.length);
+        currentTetrominoIndex = random;
+        current = tetrominoes[random][currentRotation];
+        currentPosition = 4;
+        draw();
+        addScore();
+        checkGameOver();
+      }
+    }
+
+    // Move left
+    function moveLeft() {
+      if (gameOver) return;
+      undraw();
+      const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0);
+      if (!isAtLeftEdge) currentPosition -= 1;
+      if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+        currentPosition += 1;
+      }
+      draw();
+    }
+
+    // Move right
+    function moveRight() {
+      if (gameOver) return;
+      undraw();
+      const isAtRightEdge = current.some(index => (currentPosition + index) % width === width - 1);
+      if (!isAtRightEdge) currentPosition += 1;
+      if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+        currentPosition -= 1;
+      }
+      draw();
+    }
+
+    // Rotate
+    function rotate() {
+      if (gameOver) return;
+      undraw();
+      currentRotation = (currentRotation + 1) % 4;
+      current = tetrominoes[random][currentRotation];
+      draw();
+    }
+
+    // Key controls
+    function control(e) {
+      if (e.key === 'ArrowLeft') moveLeft();
+      else if (e.key === 'ArrowRight') moveRight();
+      else if (e.key === 'ArrowDown') moveDown();
+      else if (e.key === 'ArrowUp') rotate();
+    }
+    document.addEventListener('keydown', control);
+
+    // Add score
+    function addScore() {
+      for (let i = 0; i < 199; i += width) {
+        const row = [i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7, i + 8, i + 9];
+        if (row.every(index => squares[index].classList.contains('taken'))) {
+          score += 10;
+          scoreDisplay.innerHTML = `Score: ${score}`;
+          row.forEach(index => {
+            squares[index].classList.remove('taken');
+            for (let j = 0; j < tetrominoes.length; j++) {
+              squares[index].classList.remove('tetromino' + j);
+              squares[index].classList.remove('stacked' + j);
+            }
+          });
+          const squaresRemoved = squares.splice(i, width);
+          squares = squaresRemoved.concat(squares);
+          squares.forEach(cell => grid.appendChild(cell));
+        }
+      }
+    }
+
+    // Check game over
+    function checkGameOver() {
+      if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+        gameOver = true;
+        gameOverDisplay.style.display = 'block';
+      }
+    }
+
+    // Start the game
+    draw();
+    setInterval(moveDown, 1000);
+  </script>
+</body>
+</html>
